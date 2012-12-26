@@ -26,6 +26,16 @@ createDatabase();
 print "Filenames:@filenames\n";
 foreach my $filename (@filenames)
 {
+	my $path = undef;
+
+	if( $filename =~ m#(.*\/)([^\/]+)$# )
+	{
+		$path 		= $1;
+		$filename	= $2;
+	}
+	
+	
+
 	my $testname = $filename;
 	$testname =~ s/\.(m4v|mov|mp4|mpeg|mpg)$//;
 	$testname =~ s/^\s*Tatort[\_\-\t ]+//;
@@ -64,7 +74,7 @@ foreach my $filename (@filenames)
 		if( $filename ne $name )
 		{
 			print "Renaming $filename -> $name\n";
-			rename($filename,$name) ||die "Can't rename:$!";
+			rename($path.$filename,$path.$name) ||die "Can't rename:$path$filename -> $path$name due to:$!";
 		}
 	
 	}
