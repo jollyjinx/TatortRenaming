@@ -205,7 +205,8 @@ sub updateEpisode($)
 		return undef;
 	}
 
-	my $detailurl = 'http://www.daserste.de/unterhaltung/krimi/tatort/sendung/'.$database{episode}{$quickepisodename}{urlname}.'.html';
+	my $yearpath  = ($database{episode}{$quickepisodename}{episodeyear}>2012)?'':$database{episode}{$quickepisodename}{episodeyear}.'/';
+	my $detailurl = 'http://www.daserste.de/unterhaltung/krimi/tatort/sendung/'.$yearpath.$database{episode}{$quickepisodename}{urlname}.'.html';
 	
 	print STDERR "Detail url:$detailurl\n";
 	
