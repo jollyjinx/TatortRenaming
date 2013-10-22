@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-#tator script
+#tatort script
 #
 #input: <option value="date">date: Name</option>
 
@@ -137,7 +137,7 @@ sub createDatabase
 
 	printf STDERR "Got data from url, length:%d\n",length($data);	
 	
-	if( $data =~ m#<select name="filterBoxGroup"(.*?)</select>#s )
+	while( $data =~ m#<select name="filterBoxGroup"(.*?)</select>#gs )
 	{
 		my $options = $1;
 	
@@ -208,19 +208,19 @@ sub updateEpisode($)
 	my $yearpath  = ($database{episode}{$quickepisodename}{episodeyear}>2012)?'':$database{episode}{$quickepisodename}{episodeyear}.'/';
 	my $detailurl = 'http://www.daserste.de/unterhaltung/krimi/tatort/sendung/'.$yearpath.$database{episode}{$quickepisodename}{urlname}.'.html';
 	
-	print STDERR "Detail url:$detailurl\n";
+	print STDERR "Episode URL: $detailurl\n";
 	
 	my $data	=	getUrl($detailurl);
 	
 	# print "Found $data";
 	
-	if( $data =~ m#<table\s+class="besetzungTabelle">(.*?)</table>#s )
+	if( $data =~ m#<div\s+class="infokasten small">(.*?)</table>#s )
 	{
 		my $rows = $1;
 
-		# print STDERR "Got artists and roles.\n";
+		 print STDERR "Got artists and roles.\n";
 		
-		ARTISTS: while( $rows =~ m#<td\s+class="block1"\s+scope="row">(.*?)</td>#sg )
+		ARTISTS: while( $rows =~ m#<td\s+scope="row">(.*?)</td>#sg )
 		{
 			my @namingparts = split( /\s+/ ,$1);
 			
