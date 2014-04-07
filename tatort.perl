@@ -38,8 +38,10 @@ foreach my $filename (@filenames)
 
 	my $testname = $filename;
 	$testname =~ s/\.(m4v|mov|mp4|mpeg|mpg)$//;
-	$testname =~ s/^\s*Tatort[\_\-\t ]+//;
-	$testname =~ s/[\-\_\t ]+(Spielfilm|Fernsehfilm|Krimi)\s.*//;
+	$testname =~ s/[\_\-\s]+/ /g;
+	$testname =~ s/^\s*Tatort\s+//;
+	$testname =~ s/\sFernsehfilm\s+Deutschland\s+\d{4}//;
+	$testname =~ s/\s(Spielfilm|Fernsehfilm|Krimi)\s.*//;
 	$testname =~ s/^\d{4}\.\d{2}\.\d{2}-[^\-]+\-//;
 	$testname =~ s/^\d+,\s+//;
 	
@@ -94,37 +96,19 @@ sub getUrl($)
 {
 	my($url) = (@_);
 
-	my $userAgent	= LWP::UserAgent->new;
+
+	my $data = `curl -A "JNXTatortScript/0.2" "$url"`;
+	$data =~ s/\xE4/ä/g;
+	$data =~ s/\xFC/ü/g;
+	$data =~ s/\xF6/ö/g;
 	
-	$userAgent->agent("JNXTatortScript/0.1");
-
-	my $request		= HTTP::Request->new(GET => $url);
-	my $response	= $userAgent->request($request);
-
-	if( $response->is_success )
-	{
-		my $isodata	= $response->content();
-
-		my $data = Encode::decode('iso-8859-1', $isodata);
-
-		$data =~ s/\xE4/ä/g;
-		$data =~ s/\xFC/ü/g;
-		$data =~ s/\xF6/ö/g;
-		
-		$data =~ s/\xC4/Ä/g;
-		$data =~ s/\xDC/Ü/g;
-		$data =~ s/\xD6/Ö/g;
-		
-		$data =~ s/\xDF/ß/g;
-		
-		return $data;
-	}
-	else
-	{
-		print STDERR "Got invalid response:".Data::Dumper->Dumper($response);
+	$data =~ s/\xC4/Ä/g;
+	$data =~ s/\xDC/Ü/g;
+	$data =~ s/\xD6/Ö/g;
 	
-	}
-	return undef;
+	$data =~ s/\xDF/ß/g;
+	
+	return $data;
 }
 
 
@@ -135,8 +119,8 @@ sub createDatabase
 	my $data	=	getUrl('http://www.daserste.de/unterhaltung/krimi/tatort/sendung/index.html');
 
 
-	printf STDERR "Got data from url, length:%d\n",length($data);	
-	
+	# printf STDERR $data."\n\n\n";
+
 	while( $data =~ m#<select name="filterBoxGroup"(.*?)</select>#gs )
 	{
 		my $options = $1;
